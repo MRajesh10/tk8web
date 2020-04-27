@@ -1,0 +1,18 @@
+name: Pipeline
+
+on: [push]
+env:
+  APPLICATION_NAME: tk8web
+jobs:
+  lint:
+    runs-on: ubuntu-18.04
+    steps:
+    - uses: actions/checkout@v1
+    - name: Use Node.js
+      uses: actions/setup-node@v1
+      with:
+        node-version: '10.x'
+    - run: npm install
+    - run: npm run build -- --output-path=./dist/out 
+      env:
+        CI: true
