@@ -4,15 +4,21 @@ on: [push]
 env:
   APPLICATION_NAME: tk8web
 jobs:
-  lint:
+  pipeline:
     runs-on: ubuntu-18.04
     steps:
     - uses: actions/checkout@v1
-    - name: Use Node.js
+    - name: Use Node.js 10
       uses: actions/setup-node@v1
       with:
         node-version: '10.x'
     - run: npm install
+    - run: npm lint
+    - run: npm test
     - run: npm run build -- --output-path=./dist/out 
       env:
         CI: true
+    - name: docker build
+      uses: actions/docker/cli@master
+      with:
+        args: build -t MRajesh10/tk8web .
