@@ -5,7 +5,6 @@ on: [push]
 env:
   APPLICATION_NAME: tk8web
   REPO_NAME: kubernauts
-  KUBECONFIG_FILE: "${{ secrets.KUBECONFIG }}"
 
 jobs:
   pipeline:
@@ -46,5 +45,5 @@ jobs:
           
     - name: setup kubectl
       run: |
-          kubectl cluster-info 
+          kubectl cluster-info --kubeconfig="${{ secrets.KUBECONFIG }}"
           
