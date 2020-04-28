@@ -5,6 +5,7 @@ on: [push]
 env:
   APPLICATION_NAME: tk8web
   REPO_NAME: kubernauts
+  KUBE_CONFIG: "${{ secrets.KUBECONFIG }}"
 
 jobs:
   pipeline:
@@ -13,8 +14,8 @@ jobs:
     - uses: actions/checkout@v1
     - name: Push image
       run: |
-        echo "${{ secrets.KUBECONFIG }}" | base64 -d > $HOME/.config
-        kubectl cluster-info --kubeconfig="$HOME/.config"
+        echo $KUBE_CONFIG | base64 -d | tee $HOME/kconfig
+        kubectl cluster-info --kubeconfig="$HOME/kconfig"
            
 
           
