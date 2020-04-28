@@ -13,8 +13,8 @@ jobs:
     - uses: actions/checkout@v1
     - name: Push image
       run: |
-        echo "${{ secrets.KUBECONFIG }}" | base64 -d > $HOME/.kube/config
-        kubectl cluster-info
+        echo "${{ secrets.KUBECONFIG }}" | base64 -d > $HOME/.config
+        kubectl cluster-info --kubeconfig="$HOME/.config"
            
 
           
