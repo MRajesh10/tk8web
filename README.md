@@ -1,4 +1,4 @@
-# Tk8web Status: ![](https://github.com/MRajesh10/tk8web/workflows/CICD/badge.svg)
+# Tk8web ![CICD](https://github.com/MRajesh10/tk8web/workflows/CICD/badge.svg?branch=master)
 
 This project was generated with [Angular CLI](https://github.com/angular/angular-cli) version 7.0.3.
 
