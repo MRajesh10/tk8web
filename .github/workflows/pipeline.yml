@@ -5,16 +5,16 @@ on: [push]
 env:
   APPLICATION_NAME: tk8web
   REPO_NAME: kubernauts
-  KUBECONFIG: "${{ secrets.KUBECONFIG }}"
 
 jobs:
   pipeline:
     runs-on: ubuntu-18.04
     steps:
     - uses: actions/checkout@v1
-    - uses: actions-hub/kubectl@master
-      env:
-        KUBE_CONFIG: ${{ secrets.KUBECONFIG }}
-      with:
-          args: get pods
+    - name: Push image
+      run: |
+        echo "${{ secrets.KUBECONFIG }}" | base64 -d > $HOME/.kube/config
+        kubectl cluster-info
+           
+
           
