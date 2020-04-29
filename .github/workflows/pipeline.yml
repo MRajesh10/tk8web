@@ -12,10 +12,17 @@ jobs:
     runs-on: ubuntu-18.04
     steps:
     - uses: actions/checkout@v1
-    - name: Push image
+    - name: configure kubeconfig
       run: |
         echo $KUBE_CONFIG | base64 -d > $HOME/kconfig
-        kubectl cluster-info --kubeconfig="$HOME/kconfig"
-           
+        
+    - name: run kubectl
+      run: |
+        kubectl cluster-info 
+      env:
+        KUBECONFG: "$HOME/kconfig"
 
+    - name: cleanup kubeconfig
+      run: |
+        rm -f $HOME/kconfig
           
