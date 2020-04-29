@@ -3,6 +3,7 @@ name: CICD
 on: [push]
 
 env:
+
   APPLICATION_NAME: tk8web
   REPO_NAME: kubernauts
   KUBE_CONFIG: "${{ secrets.KUBECONFIG }}"
@@ -14,15 +15,20 @@ jobs:
     runs-on: ubuntu-18.04
     
     steps:
+
     - name: Checkout
       uses: actions/checkout@v1
 
-    - name: Test build on Node.js10
+    - name: setup Node.js 10 env
       uses: actions/setup-node@v1
       with:
         node-version: '10.x'
-    - run: npm install
-    - run: npm run build -- --output-path=./dist/out 
+
+    - name: Install on Node.js 10
+      run: npm install
+
+    - name: Build on Node.js 10
+      run: npm run build -- --output-path=./dist/out 
       env:
         CI: true
 
@@ -34,17 +40,17 @@ jobs:
 
     - name: Push image
       run: |
-          IMAGE_NAME="$REPO_NAME/$APPLICATION_NAME"
-          IMAGE_ID=${{ secrets.DOCKER_REGISTRY }}/$IMAGE_NAME
-          # Strip git ref prefix from version
-          VERSION=$(echo $GITHUB_SHA | cut -c 1-6)
-          echo IMAGE_ID=$IMAGE_ID
-          echo VERSION=$VERSION
-          echo ::set-env name=DOCKER_IMAGE_TAG::$(echo $IMAGE_ID:$VERSION) 
-          
-          docker tag tk8web $IMAGE_ID:latest $IMAGE_ID:$VERSION
-          docker push $IMAGE_ID:$VERSION
-          docker push $IMAGE_ID:latest
+        IMAGE_NAME="$REPO_NAME/$APPLICATION_NAME"
+        IMAGE_ID=${{ secrets.DOCKER_REGISTRY }}/$IMAGE_NAME
+        VERSION=$(echo $GITHUB_SHA | cut -c 1-6)
+        echo IMAGE_ID=$IMAGE_ID
+        echo VERSION=$VERSION
+        echo ::set-env name=DOCKER_IMAGE_TAG::$(echo $IMAGE_ID:$VERSION) 
+        
+        docker tag tk8web $IMAGE_ID:latest
+        docker push $IMAGE_ID:$VERSION
+        docker tag tk8web $IMAGE_ID:$VERSION
+        docker push $IMAGE_ID:latest
           
           
     - name: Configure kubeconfig
@@ -68,8 +74,6 @@ jobs:
         kubectl -n tk8web set image deployment tk8web tk8web=$DOCKER_IMAGE_TAG
         kubectl -n tk8web rollout status deployment tk8web
 
-
     - name: Cleanup kubeconfig
       run: |
         rm -f ~/.kube/config
-          
