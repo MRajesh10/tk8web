@@ -33,26 +33,22 @@ jobs:
         CI: true
 
     - name: Build docker image
-      run: docker build . --file Dockerfile --tag tk8web
-
+      run: docker build . --file Dockerfile --tag ${{ secrets.DOCKER_REGISTRY }}/$REPO_NAME/$APPLICATION_NAME:latest
+    
     - name: Log into private registry
       run: echo "${{ secrets.DOCKER_PASSWD }}" | docker login ${{ secrets.DOCKER_REGISTRY }} -u ${{ secrets.DOCKER_UNAME }} --password-stdin
 
     - name: Push image
       run: |
-        IMAGE_NAME="$REPO_NAME/$APPLICATION_NAME"
-        IMAGE_ID=${{ secrets.DOCKER_REGISTRY }}/$IMAGE_NAME
+        IMAGE_NAME=${{ secrets.DOCKER_REGISTRY }}/$REPO_NAME/$APPLICATION_NAME
         VERSION=$(echo $GITHUB_SHA | cut -c 1-6)
-        echo IMAGE_ID=$IMAGE_ID
         echo VERSION=$VERSION
-        echo ::set-env name=DOCKER_IMAGE_TAG::$(echo $IMAGE_ID:$VERSION) 
+        echo ::set-env name=DOCKER_IMAGE_TAG::$(echo $IMAGE_NAME:$VERSION) 
         
-        docker tag tk8web $IMAGE_ID:latest
-        docker push $IMAGE_ID:$VERSION
-        docker tag tk8web $IMAGE_ID:$VERSION
-        docker push $IMAGE_ID:latest
-          
-          
+        docker tag $IMAGE_NAME:latest $IMAGE_NAME:$VERSION
+        docker push $IMAGE_NAME:$VERSION
+        docker push $IMAGE_NAME:latest
+
     - name: Configure kubeconfig
       run: |
         mkdir -p ~/.kube
@@ -73,7 +69,7 @@ jobs:
         echo "set deployment to latest Image $DOCKER_IMAGE_TAG"
         kubectl -n tk8web set image deployment tk8web tk8web=$DOCKER_IMAGE_TAG
         kubectl -n tk8web rollout status deployment tk8web
-
+        
     - name: Cleanup kubeconfig
       run: |
         rm -f ~/.kube/config
