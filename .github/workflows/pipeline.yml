@@ -14,15 +14,15 @@ jobs:
     - uses: actions/checkout@v1
     - name: configure kubeconfig
       run: |
-        echo $KUBE_CONFIG | base64 -d > $HOME/kconfig
+        echo $KUBE_CONFIG | base64 -d > ~/kconfig
         
     - name: run kubectl
       run: |
         kubectl cluster-info 
       env:
-        KUBECONFIG: "$HOME/kconfig"
+        KUBECONFIG: "~/kconfig"
 
     - name: cleanup kubeconfig
       run: |
-        rm -f $HOME/kconfig
+        rm -f ~/kconfig
           
