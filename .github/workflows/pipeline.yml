@@ -20,7 +20,7 @@ jobs:
       run: |
         kubectl cluster-info 
       env:
-        KUBECONFG: "$HOME/kconfig"
+        KUBECONFIG: "$HOME/kconfig"
 
     - name: cleanup kubeconfig
       run: |
