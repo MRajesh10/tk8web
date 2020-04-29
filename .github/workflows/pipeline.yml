@@ -8,8 +8,11 @@ env:
   KUBE_CONFIG: "${{ secrets.KUBECONFIG }}"
 
 jobs:
+
   pipeline:
+    
     runs-on: ubuntu-18.04
+    
     steps:
     - name: Checkout
       uses: actions/checkout@v1
@@ -34,17 +37,14 @@ jobs:
           IMAGE_NAME="$REPO_NAME/$APPLICATION_NAME"
           IMAGE_ID=${{ secrets.DOCKER_REGISTRY }}/$IMAGE_NAME
           # Strip git ref prefix from version
-          VERSION=$(echo "${{ github.ref }}" | sed -e 's,.*/\(.*\),\1,')
-          # Strip "v" prefix from tag name
-          [[ "${{ github.ref }}" == "refs/tags/"* ]] && VERSION=$(echo $VERSION | sed -e 's/^v//')
-          # Use Docker `latest` tag convention
-          [ "$VERSION" == "master" ] && VERSION=latest
+          VERSION=$(echo $GITHUB_SHA | cut -c 1-6)
           echo IMAGE_ID=$IMAGE_ID
           echo VERSION=$VERSION
           echo ::set-env name=DOCKER_IMAGE_TAG::$(echo $IMAGE_ID:$VERSION) 
           
-          docker tag tk8web $IMAGE_ID:$VERSION
+          docker tag tk8web $IMAGE_ID:latest $IMAGE_ID:$VERSION
           docker push $IMAGE_ID:$VERSION
+          docker push $IMAGE_ID:latest
           
           
     - name: Configure kubeconfig
